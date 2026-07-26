@@ -1,0 +1,78 @@
+[build-system]
+requires = ["hatchling"]
+build-backend = "hatchling.build"
+
+[project]
+name = "adharmon"
+version = "0.1.0"
+description = "Harmonize multi-source Alzheimer's disease sample metadata into an Azure data lake"
+readme = "README.md"
+requires-python = ">=3.10"
+license = { text = "MIT" }
+authors = [{ name = "Jared M. Hendrickson", email = "jaredolympia@proton.me" }]
+keywords = ["alzheimers", "neurodegeneration", "data-engineering", "harmonization", "azure"]
+classifiers = [
+  "Programming Language :: Python :: 3.10",
+  "Programming Language :: Python :: 3.11",
+  "Programming Language :: Python :: 3.12",
+  "Topic :: Scientific/Engineering :: Bio-Informatics",
+]
+dependencies = [
+  "pandas>=2.1",
+  "pyarrow>=14.0",
+]
+
+[project.optional-dependencies]
+azure = [
+  "azure-identity>=1.15",
+  "azure-storage-file-datalake>=12.14",
+]
+dev = [
+  "pytest>=8.0",
+  "pytest-cov>=4.1",
+  "ruff>=0.6",
+]
+
+[project.scripts]
+adharmon = "adharmon.cli:main"
+
+[tool.hatch.build.targets.wheel]
+packages = ["src/adharmon"]
+
+[tool.pytest.ini_options]
+minversion = "8.0"
+testpaths = ["tests"]
+addopts = [
+  "-ra",
+  "--strict-markers",
+  "--strict-config",
+  "--cov=adharmon",
+  "--cov-report=term-missing",
+  "--cov-fail-under=85",
+]
+filterwarnings = ["error"]
+
+[tool.coverage.run]
+branch = true
+source = ["src/adharmon"]
+
+[tool.coverage.report]
+exclude_also = ["if TYPE_CHECKING:", "raise NotImplementedError", "\\.\\.\\."]
+
+[tool.ruff]
+line-length = 120
+target-version = "py310"
+src = ["src", "tests"]
+
+[tool.ruff.lint]
+select = ["E", "F", "W", "I", "N", "UP", "B", "C4", "SIM", "ARG", "PTH", "RET", "D"]
+ignore = [
+  "D203",  # conflicts with D211
+  "D213",  # conflicts with D212
+]
+
+[tool.ruff.lint.per-file-ignores]
+"tests/*" = ["D100", "D101", "D102", "D103", "ARG001", "ARG002"]
+
+[tool.ruff.lint.pydocstyle]
+convention = "google"
